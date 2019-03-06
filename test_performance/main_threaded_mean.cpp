@@ -16,8 +16,12 @@
 const std::string title = "G3LOG";
 #elif defined(GOOGLE_GLOG_PERFORMANCE)
 const std::string title = "GOOGLE__GLOG";
+#elif defined(SPDLOG_PERFORMANCE)
+const std::string title = "SPDLOG";
+#elif defined(SPDLOG_ASYNC_PERFORMANCE)
+const std::string title = "SPDLOG_ASYNC";
 #else
-#error G3LOG_PERFORMANCE or GOOGLE_GLOG_PERFORMANCE was not defined
+#error G3LOG_PERFORMANCE or GOOGLE_GLOG_PERFORMANCE or SPDLOG_PERFORMANCE was not defined
 #endif
 
 #if (defined(WIN32) || defined(_WIN32) || defined(__WIN32__))
@@ -64,10 +68,12 @@ int main(int argc, char **argv)
    auto worker = g3::LogWorker::createLogWorker();
    auto handle= worker->addDefaultLogger(g_prefix_log_name, g_path);
    g3::initializeLogging(worker.get());
-
-
 #elif defined(GOOGLE_GLOG_PERFORMANCE)
    google::InitGoogleLogging(argv[0]);
+#elif defined(SPDLOG_PERFORMANCE)
+   auto my_logger = spdlog::basic_logger_mt("my_logger", g_path+"SPDLOG.log");
+#elif defined(SPDLOG_ASYNC_PERFORMANCE)
+   auto my_logger = spd::basic_logger_mt<spd::async_factory>("my_logger", g_path+"SPDLOG_ASYNC.log");
 #endif
    auto start_time = std::chrono::high_resolution_clock::now();
 
@@ -93,6 +99,10 @@ int main(int argc, char **argv)
    worker.reset(); // will flush anything in the queue to file
 #elif defined(GOOGLE_GLOG_PERFORMANCE)
    google::ShutdownGoogleLogging();
+#elif defined(SPDLOG_PERFORMANCE)
+   my_logger -> flush();
+#elif defined(SPDLOG_ASYNC_PERFORMANCE)
+   spd::shutdown();
 #endif
 
    auto worker_end_time = std::chrono::high_resolution_clock::now();

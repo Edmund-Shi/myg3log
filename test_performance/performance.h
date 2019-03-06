@@ -26,8 +26,18 @@ using namespace g3::internal;
 
 #elif defined(GOOGLE_GLOG_PERFORMANCE)
 #include <glog/logging.h>
+
+#elif defined(SPDLOG_PERFORMANCE)
+#include<spdlog/spdlog.h>
+#include<spdlog/sinks/basic_file_sink.h>
+namespace spd = spdlog;
+#elif defined(SPDLOG_ASYNC_PERFORMANCE)
+#include<spdlog/spdlog.h>
+#include<spdlog/async.h>
+#include<spdlog/sinks/basic_file_sink.h>
+namespace spd = spdlog;
 #else
-#error G3LOG_PERFORMANCE or GOOGLE_GLOG_PERFORMANCE was not defined
+#error G3LOG_PERFORMANCE or GOOGLE_GLOG_PERFORMANCE or SPDLOG_PERFORMANCE was not defined
 #endif
 
 typedef std::chrono::high_resolution_clock::time_point time_point;
@@ -91,6 +101,13 @@ inline void measurePeakDuringLogWrites(const std::string& title, std::vector<uin
   std::cout << "G3LOG (" << title << ") WORST_PEAK PERFORMANCE TEST" << std::endl;
 #elif defined(GOOGLE_GLOG_PERFORMANCE)
   std::cout << "GOOGLE_GLOG (" << title << ") WORST_PEAK PERFORMANCE TEST" << std::endl;
+#elif defined(SPDLOG_PERFORMANCE) 
+  std::cout << "SPDLOG (" << title << ") WORST_PEAK PERFORMANCE TEST" << std::endl;
+  // get spdlogger
+  auto logger = spd::get("my_logger");
+#elif defined(SPDLOG_ASYNC_PERFORMANCE)
+  std::cout << "SPDLOG ASYNC (" << title << ") WORST_PEAK PERFORMANCE TEST" << std::endl;
+  auto logger = spd::get("my_logger");
 #else
   std::cout << "ERROR no performance type chosen" << std::endl;
   assert(false);
@@ -98,7 +115,13 @@ inline void measurePeakDuringLogWrites(const std::string& title, std::vector<uin
   for(uint64_t count = 0; count < g_iterations; ++count)
   {
     auto start_time = std::chrono::high_resolution_clock::now();
+#if defined(SPDLOG_PERFORMANCE) || defined(SPDLOG_ASYNC_PERFORMANCE)
+    logger -> info("{} iteration # {} {} {} and a float {:.6f}", title, count, 
+      charptrmsg, strmsg, pi_f);
+#else
     LOG(INFO) << title << " iteration #" << count << " " << charptrmsg << strmsg << " and a float: " << std::setprecision(6) << pi_f;
+#endif
+
     auto stop_time = std::chrono::high_resolution_clock::now();
     uint64_t time_us = std::chrono::duration_cast<microsecond>(stop_time - start_time).count();
     result.push_back(time_us);
@@ -113,13 +136,24 @@ inline void doLogWrites(const std::string& title)
   std::cout << "G3LOG (" << title << ") PERFORMANCE TEST" << std::endl;
 #elif defined(GOOGLE_GLOG_PERFORMANCE)
   std::cout << "GOOGLE_GLOG (" << title << ") PERFORMANCE TEST" << std::endl;
+#elif defined(SPDLOG_PERFORMANCE)
+  std::cout << "SPDLOG (" << title << ") PERFORMANCE TEST" << std::endl;
+  auto logger = spd::get("my_logger");
+#elif defined(SPDLOG_ASYNC_PERFORMANCE)
+  std::cout << "SPDLOG_ASYNC (" << title << ") PERFORMANCE TEST" << std::endl;
+  auto logger = spd::get("my_logger");
 #else
   std::cout << "ERROR no performance type chosen" << std::endl;
   assert(false);
 #endif
   for(uint64_t count = 0; count < g_iterations; ++count)
   {
+#if defined(SPDLOG_PERFORMANCE) || defined(SPDLOG_ASYNC_PERFORMANCE)
+    logger -> info("{} iteration # {} {} {} and a float {:.6f}", title, count, 
+      charptrmsg, strmsg, pi_f);
+#else
     LOG(INFO) << title << " iteration #" << count << " " << charptrmsg << strmsg << " and a float: " << std::setprecision(6) << pi_f;
+#endif
   }
 }
 

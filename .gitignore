@@ -1,9 +1,12 @@
 syntax: glob
 sinks/*
 3rdParty/*
-build/*
+**/build/*
 nbproject/*
 build_clang
 build_travis
 gtest-1.7.0
+*.out
+**/log*/
+.vscode/
 *~
