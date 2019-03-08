@@ -15,6 +15,8 @@
 #include <chrono>
 #include <cassert>
 #include <iomanip>
+
+#include <sys/time.h>
 #ifdef __MACH__
 #include <sys/time.h>
 #endif
@@ -139,11 +141,99 @@ namespace g3 {
       return tm_snapshot;
    }
 
+   // change to gettimeofday to speed up this function
+   tm mylocaltime(const std::time_t& ts) {
+      struct tm tm_snapshot;
+      
+      // we asume the time stamp no eariler than 2017.01.01 Sunday(GMT)
+      const std::time_t base_time = 1483228800;
+      const int base_year = 2017;
+      
+      // define const to speed up calculation
+      const int sec_per_day = 86400;
+      const int sec_per_4year = sec_per_day * (365 * 4 + 1);
+      // sec_per_year[1] for leap year
+      const int sec_per_year[] = {sec_per_day * 365, sec_per_day * 366};
+      const int day_per_month[] = {31,28,31,30,31, 30,31,31,30,31, 30,31};
+      const int day_per_month_leapyear[] = {31,29,31,30,31, 30,31,31,30,31, 30,31};
+
+      // add time zone info here
+      // process time zone info
+      struct timeval tv;
+      struct timezone tz;
+      gettimeofday(&tv, &tz);
+
+      
+
+      // time which is eariler than 2017
+      if (ts <= base_time) {
+         return localtime(ts);
+      }
+
+      // total time left
+      long secs = static_cast<long>(ts - base_time);
+      // See: http://man7.org/linux/man-pages/man2/gettimeofday.2.html
+      // TODO tz field is obsolete, and will always return ZERO
+      const int kTimeZone = 8;
+      secs += kTimeZone * 3600;
+      
+      // determine leap year
+      auto isLeap = [](int year) {
+         return (year % 400 == 0) || (year % 100 != 0 && year % 4 == 0);
+      };
+
+      // day since Sunday
+      int wday = secs / sec_per_day % 7;  // since 2017.01.01 (Sunday)
+
+      int year  = base_year;
+      while(secs > sec_per_year[isLeap(year)]){
+         secs -= sec_per_year[isLeap(year)];
+         year++;
+      }
+
+      // day since January 1st: 0-365
+      int yday = secs / sec_per_day;
+
+      int month = 0;
+      if (isLeap(year)) {
+         while(secs > day_per_month_leapyear[month] * sec_per_day){
+            secs -= day_per_month_leapyear[month] * sec_per_day;
+            month++;
+         }
+      } else {
+         while(secs > day_per_month[month] * sec_per_day){
+            secs -= day_per_month[month] * sec_per_day;
+            month++;
+         }
+      }
+
+      int mday = secs / sec_per_day;  // day of the month: range 1-31
+      secs -= mday * sec_per_day;
+      int hour = secs / 3600; 
+      secs -= hour * 3600;
+      int minutes = secs / 60;
+      secs = secs % 60;
+
+      
+      
+      tm_snapshot.tm_year = year - 1900;  // year from 1900
+      tm_snapshot.tm_mon = month;  // range: 0-11
+      tm_snapshot.tm_mday = mday + 1;   // range: 1-31
+      tm_snapshot.tm_yday = yday;   // range: 0-365
+      tm_snapshot.tm_wday = wday;   // range: 0-6 
+      tm_snapshot.tm_hour = hour;   // range: 0-23
+      tm_snapshot.tm_min = minutes;    // range:0-59
+      tm_snapshot.tm_sec = secs; 
+      tm_snapshot.tm_zone = "GTM+8";  // unfinished
+      tm_snapshot.tm_isdst = tz.tz_dsttime;  
+      
+      return tm_snapshot;
+   }
 
    std::string localtime_formatted(const g3::system_time_point& ts, const std::string& time_format) {
       auto format_buffer = internal::localtime_formatted_fractions(ts, time_format);
       auto time_point = std::chrono::system_clock::to_time_t(ts);
-      std::tm t = localtime(time_point);
+      std::tm t = mylocaltime(time_point);
       return g3::put_time(&t, format_buffer.c_str()); // format example: //"%Y/%m/%d %H:%M:%S");
    }
 } // g3

@@ -50,6 +50,7 @@ namespace g3 {
    * retrieved with std::localtime. g3::localtime is threadsafe which std::localtime is not.
    * g3::localtime is probably used together with @ref g3::systemtime_now */
    tm localtime(const std::time_t& time);
+   tm mylocaltime(const std::time_t& time);
 
    /** format string must conform to std::put_time's demands.
    * WARNING: At time of writing there is only so-so compiler support for
