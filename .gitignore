@@ -10,3 +10,5 @@ gtest-1.7.0
 **/log*/
 .vscode/
 *~
+cmake-build-debug/
+.idea/
