@@ -18,11 +18,17 @@
  * linkedin: http://linkedin.com/se/kjellkod */
 
 #pragma once
+// #define USING_LOCKFREE_QUEUE
 
 #include <thread>
 #include <functional>
 #include <memory>
+
+#ifdef USING_LOCKFREE_QUEUE
+#include "g3log/shared_lockfree_queue.hpp"
+#else
 #include "g3log/shared_queue.hpp"
+#endif 
 
 namespace kjellkod {
    typedef std::function<void() > Callback;
@@ -40,8 +46,11 @@ namespace kjellkod {
             func();
          }
       }
-
+#ifdef USING_LOCKFREE_QUEUE
+      shared_lockfree_queue<Callback> mq_;
+#else 
       shared_queue<Callback> mq_;
+#endif
       std::thread thd_;
       bool done_;
 

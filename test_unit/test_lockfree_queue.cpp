@@ -118,6 +118,6 @@ int main(int argc, char** argv) {
         << "\nAverage time per entry: " << total_time_us / (thread_count * entry_count) << "us"
         << std::endl;
     }
-
+    delete[] producer;
     std::cout << oss.str()<< std::endl;
 }

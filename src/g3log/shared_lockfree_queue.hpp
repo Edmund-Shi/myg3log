@@ -47,6 +47,8 @@ private:
         return (count % Q_SIZE);
     }
 
+    shared_lockfree_queue &operator=(const shared_lockfree_queue&) = delete;
+    shared_lockfree_queue(const shared_lockfree_queue &other) = delete;
 public:
     shared_lockfree_queue() : 
         write_index_(0),
