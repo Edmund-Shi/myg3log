@@ -64,7 +64,9 @@ namespace kjellkod {
       void send(Callback msg_) {
 #ifdef USING_LOCKFREE_QUEUE
          while(!mq_.push(msg_)) {};  // push until success!
-
+#else
+         mq_.push(msg_);
+#endif
       }
 
       /// Factory: safe construction of object before thread start

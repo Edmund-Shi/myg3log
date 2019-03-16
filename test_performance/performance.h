@@ -154,7 +154,7 @@ inline void doLogWrites(const std::string& title)
     logger -> info("hello logger: msg number {}", count);
 #else
     // LOG(INFO) << title << " iteration #" << count << " " << charptrmsg << strmsg << " and a float: " << std::setprecision(6) << pi_f;
-    doLogWrites(INFO) << "hello logger: msg number " << count;
+    LOG(INFO) << "hello logger: msg number " << count;
 #endif
   }
 }

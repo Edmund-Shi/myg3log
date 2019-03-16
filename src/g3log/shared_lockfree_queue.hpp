@@ -6,7 +6,7 @@
 
 #include "atomic_ops.h"
 
-#define ARRAY_LOCK_FREE_Q_DEFAULT_SIZE 65536  // (2^16
+// #define ARRAY_LOCK_FREE_Q_DEFAULT_SIZE 65536  // (2^16
 #define ARRAY_LOCK_FREE_Q_DEFAULT_SIZE 8388608  // (2^23)
 
 // define this variable if calls to "size" must return the real size of the 
