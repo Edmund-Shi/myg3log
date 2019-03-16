@@ -7,6 +7,7 @@
 #include "atomic_ops.h"
 
 #define ARRAY_LOCK_FREE_Q_DEFAULT_SIZE 65536  // (2^16
+#define ARRAY_LOCK_FREE_Q_DEFAULT_SIZE 8388608  // (2^23)
 
 // define this variable if calls to "size" must return the real size of the 
 // queue. If it is undefined  that function will try to take a snapshot of 
@@ -100,7 +101,7 @@ public:
         } while (!CAS(&write_index_, current_write_index, (current_write_index + 1)));
 
         // now current write index is reserved for us. save data now
-        queue_[count_to_index(current_write_index)] = item;
+        queue_[count_to_index(current_write_index)] = std::move(item);
         
         // update the maximum read index after saving the data. It wouldn't fail if there is only one thread 
         // inserting in the queue. It might fail if there are more than 1 producer threads because this
@@ -138,7 +139,7 @@ public:
         }
 
         // retrive the data from the queue
-        poped_item = queue_[count_to_index(current_read_index)];
+        poped_item = std::move(queue_[count_to_index(current_read_index)]);
 
         // try to perfrom now the CAS operation on the read index. If we succeed
         // a_data already contains what m_readIndex pointed to before we 
@@ -178,7 +179,7 @@ public:
             }
 
             // retrive the data from the queue
-            poped_item = queue_[count_to_index(current_read_index)];
+            poped_item = std::move(queue_[count_to_index(current_read_index)]);
 
             // try to perfrom now the CAS operation on the read index. If we succeed
             // a_data already contains what m_readIndex pointed to before we 

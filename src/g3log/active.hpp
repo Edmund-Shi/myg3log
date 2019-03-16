@@ -62,7 +62,7 @@ namespace kjellkod {
       }
 
       void send(Callback msg_) {
-         mq_.push(msg_);
+         while(!mq_.push(msg_)) {};  // push until success!
       }
 
       /// Factory: safe construction of object before thread start
