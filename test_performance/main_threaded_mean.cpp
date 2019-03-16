@@ -73,7 +73,9 @@ int main(int argc, char **argv)
 #elif defined(SPDLOG_PERFORMANCE)
    auto my_logger = spdlog::basic_logger_mt("my_logger", g_path+"SPDLOG.log");
 #elif defined(SPDLOG_ASYNC_PERFORMANCE)
-   auto my_logger = spd::basic_logger_mt<spd::async_factory>("my_logger", g_path+"SPDLOG_ASYNC.log");
+   int queue_size = 5000002;
+   spdlog::init_thread_pool(static_cast<size_t>(queue_size), 1);
+   auto my_logger = spd::basic_logger_mt<spd::async_factory>("my_logger", g_path+"SPDLOG_ASYNC.log", true);
 #endif
    auto start_time = std::chrono::high_resolution_clock::now();
 

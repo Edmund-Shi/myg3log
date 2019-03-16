@@ -18,7 +18,7 @@
  * linkedin: http://linkedin.com/se/kjellkod */
 
 #pragma once
-// #define USING_LOCKFREE_QUEUE
+#define USING_LOCKFREE_QUEUE
 
 #include <thread>
 #include <functional>
@@ -62,7 +62,9 @@ namespace kjellkod {
       }
 
       void send(Callback msg_) {
+#ifdef USING_LOCKFREE_QUEUE
          while(!mq_.push(msg_)) {};  // push until success!
+
       }
 
       /// Factory: safe construction of object before thread start
