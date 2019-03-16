@@ -149,10 +149,12 @@ inline void doLogWrites(const std::string& title)
   for(uint64_t count = 0; count < g_iterations; ++count)
   {
 #if defined(SPDLOG_PERFORMANCE) || defined(SPDLOG_ASYNC_PERFORMANCE)
-    logger -> info("{} iteration # {} {} {} and a float {:.6f}", title, count, 
-      charptrmsg, strmsg, pi_f);
+    // logger -> info("{} iteration # {} {} {} and a float {:.6f}", title, count, 
+    //  charptrmsg, strmsg, pi_f);
+    logger -> info("hello logger: msg number {}", count);
 #else
-    LOG(INFO) << title << " iteration #" << count << " " << charptrmsg << strmsg << " and a float: " << std::setprecision(6) << pi_f;
+    // LOG(INFO) << title << " iteration #" << count << " " << charptrmsg << strmsg << " and a float: " << std::setprecision(6) << pi_f;
+    doLogWrites(INFO) << "hello logger: msg number " << count;
 #endif
   }
 }
