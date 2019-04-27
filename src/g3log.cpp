@@ -23,7 +23,7 @@
 #include "g3log/crashhandler.hpp"
 #include "g3log/logmessage.hpp"
 #include "g3log/loglevels.hpp"
-
+#include "gflags/gflags.h"
 
 #include <mutex>
 #include <memory>
@@ -88,6 +88,15 @@ namespace g3 {
       g_fatal_hook_recursive_counter.store(0);
    }
 
+   /** Initialize G3log library like glog. 
+    *  this will create logworker, parse GFLAGS, add default logger and 
+    *  call initializeLogging()
+    * */
+   void InitG3Logging(const char* prefix) {
+      auto worker = LogWorker::createLogWorker();
+      worker -> addDefaultLogger(prefix,FLAGS_log_dir);
+      initializeLogging(worker.get());
+   }
 
    /**
    *  default does nothing, @ref ::g_pre_fatal_hook_that_does_nothing

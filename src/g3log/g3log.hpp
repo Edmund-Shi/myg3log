@@ -61,6 +61,11 @@ namespace g3 {
     *  pointer. Ownership of the \ref g3LogWorker is the responsibility of the caller */
    void initializeLogging(LogWorker *logger);
 
+   /** Initialize G3log library like glog. 
+    *  this will create logworker, parse GFLAGS, add default logger and 
+    *  call initializeLogging()
+    * */
+   void InitG3Logging(const char* prefix);
 
    /** setFatalPreLoggingHook() provides an optional extra step before the fatalExitHandler is called
     *
