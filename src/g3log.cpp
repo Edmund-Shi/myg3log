@@ -88,11 +88,11 @@ void initializeLogging(LogWorker *bgworker) {
 }
 
 /** Initialize G3log library like glog.
- *  this will create logworker, parse GFLAGS, add default logger and
+ *  This will create logworker, parse GFLAGS, add default logger and
  *  call initializeLogging()
  * */
 void InitG3Logging(const char *prefix) {
-  auto worker = LogWorker::createLogWorker();
+  static auto worker = LogWorker::createLogWorker();
   worker->addDefaultLogger(prefix, FLAGS_log_dir);
   initializeLogging(worker.get());
 }
@@ -136,8 +136,8 @@ void shutDownLogging() {
 }
 
 /** Same as the Shutdown above but called by the destructor of the LogWorker,
- * thus ensuring that no further LOG(...) calls can happen to  a non-existing
- * LogWorker.
+ * thus ensuring that no further GLOG_LOG(...) calls can happen to  a
+ * non-existing LogWorker.
  *  @param active MUST BE the LogWorker initialized for logging. If it is not
  * then this call is just ignored and the logging continues to be active.
  * @return true if the correct worker was given,. and shutDownLogging was called
@@ -145,12 +145,13 @@ void shutDownLogging() {
 bool shutDownLoggingForActiveOnly(LogWorker *active) {
   if (isLoggingInitialized() && nullptr != active &&
       (active != g_logger_instance)) {
-    LOG(WARNING) << "\n\t\tAttempted to shut down logging, but the ID of the "
-                    "Logger is not the one that is active."
-                 << "\n\t\tHaving multiple instances of the g3::LogWorker is "
-                    "likely a BUG"
-                 << "\n\t\tEither way, this call to shutDownLogging was ignored"
-                 << "\n\t\tTry g3::internal::shutDownLogging() instead";
+    GLOG_LOG(WARNING)
+        << "\n\t\tAttempted to shut down logging, but the ID of the "
+           "Logger is not the one that is active."
+        << "\n\t\tHaving multiple instances of the g3::LogWorker is "
+           "likely a BUG"
+        << "\n\t\tEither way, this call to shutDownLogging was ignored"
+        << "\n\t\tTry g3::internal::shutDownLogging() instead";
     return false;
   }
   shutDownLogging();
@@ -199,7 +200,7 @@ void saveMessage(const char *entry, const char *file, int line,
     // fatal message, flushed the crash message to the sinks and exits with the
     // same fatal signal
     //..... OR it's in unit-test mode then we throw a std::runtime_error (and
-    //never hit sleep)
+    // never hit sleep)
     fatalCall(fatal_message);
   } else {
     pushMessageToLogger(message);

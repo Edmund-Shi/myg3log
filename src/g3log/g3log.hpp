@@ -172,6 +172,22 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
     if (g3::logLevel(level))                                                   \
   INTERNAL_LOG_MESSAGE(level).stream()
 
+// Use marco expansion to create, for each use of GLOG_EVERY_N(), static
+// variables with the __LINE__ expansion as part of the variable name.
+#define LOG_EVERY_N_VARNAME(base, line) LOG_EVERY_N_VARNAME_CONCAT(base, line)
+#define LOG_EVERY_N_VARNAME_CONCAT(base, line) base##line
+#define LOG_OCCURRENCES LOG_EVERY_N_VARNAME(occurrences_, __LINE__)
+#define LOG_OCCURRENCES_MOD_N LOG_EVERY_N_VARNAME(occurrences_mod_n_, __LINE__)
+
+#define GLOG_LOG_EVERY_N(level, n)                                             \
+  static int LOG_OCCURRENCES = 0, LOG_OCCURRENCES_MOD_N = 0;                   \
+  ++LOG_OCCURRENCES;                                                           \
+  if (++LOG_OCCURRENCES_MOD_N > n)                                             \
+    LOG_OCCURRENCES_MOD_N -= n;                                                \
+  if (LOG_OCCURRENCES_MOD_N == 1)                                              \
+    if (g3::logLevel(level))                                                   \
+  INTERNAL_LOG_MESSAGE(level).stream()
+
 // 'Design By Contract' stream API. For Broken Contracts:
 //         unit testing: it will throw std::runtime_error when a contract breaks
 //         I.R.L : it will exit the application by using fatal signal SIGABRT
