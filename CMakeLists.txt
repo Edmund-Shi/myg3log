@@ -65,6 +65,7 @@ project (g3log)
 
 message( STATUS "Build type: ${CMAKE_BUILD_TYPE}" )
 message( STATUS "Configuration types: ${CMAKE_CONFIGURATION_TYPES}" )
+add_library(libgflags)
 
 # Detect 64 or 32 bit
 if (CMAKE_SIZEOF_VOID_P EQUAL 8)
