@@ -21,8 +21,8 @@
  * ********************************************* */
 
 #include "g3log/g3log.hpp"
+#include "g3log/common_flags.hpp"
 #include "g3log/crashhandler.hpp"
-#include "g3log/g3flags.h"
 #include "g3log/loglevels.hpp"
 #include "g3log/logmessage.hpp"
 #include "g3log/logworker.hpp"
@@ -85,16 +85,6 @@ void initializeLogging(LogWorker *bgworker) {
   setFatalPreLoggingHook(g_pre_fatal_hook_that_does_nothing);
   // recurvise crash counter re-set to zero
   g_fatal_hook_recursive_counter.store(0);
-}
-
-/** Initialize G3log library like glog.
- *  This will create logworker, parse GFLAGS, add default logger and
- *  call initializeLogging()
- * */
-void InitG3Logging(const char *prefix) {
-  static auto worker = LogWorker::createLogWorker();
-  worker->addDefaultLogger(prefix, FLAGS_log_dir);
-  initializeLogging(worker.get());
 }
 
 /**
