@@ -25,6 +25,9 @@ struct CustomSink {
     if (level.value == DEBUG.value) {
       return GREEN;
     }
+    if (level.value == ERROR.value) {
+      return RED;
+    }
     if (g3::internal::wasFatal(level)) {
       return RED;
     }
@@ -51,6 +54,7 @@ struct CustomSink {
  *  call initializeLogging()
  * */
 void InitG3Logging(const char *prefix) {
+  only_change_at_initialization::addLogLevel(ERROR);
   static auto worker = LogWorker::createLogWorker();
   // worker->addDefaultLogger(prefix, FLAGS_log_dir);
   worker->addSink(std::make_unique<CustomSink>(), &CustomSink::PrintMessage);
