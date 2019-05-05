@@ -44,9 +44,9 @@ struct CustomSink {
     std::string out;
     auto color = GetColor(msg._level);
     // highligt whole line
-    out.append("\033[" + std::to_string(color) + "m" + msg.timestamp() + " " +
-               msg.level() + "[" + msg.file() + "->" + msg.function() + ":" +
-               msg.line() + "] " + msg.message() + "\033[m");
+    out.append("\033[" + std::to_string(color) + "m" + msg.shortLevel() +
+               msg.timestamp() + " " + msg.file() + "->" + msg.function() +
+               ":" + msg.line() + "] " + msg.message() + "\033[m");
     return out;
   }
 
