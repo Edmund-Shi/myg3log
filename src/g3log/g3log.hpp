@@ -193,6 +193,15 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
   if (false == (boolean_expression))                                           \
   INTERNAL_CONTRACT_MESSAGE(#boolean_expression).stream()
 
+// naive CHECK_OP implement
+#define CHECK_EQ(val1, val2) CHECK((val1) == (val2))
+#define CHECK_NE(val1, val2) CHECK((val1) != (val2))
+#define CHECK_LE(val1, val2) CHECK((val1) <= (val2))
+#define CHECK_LT(val1, val2) CHECK((val1) < (val2))
+#define CHECK_GE(val1, val2) CHECK((val1) >= (val2))
+#define CHECK_GT(val1, val2) CHECK((val1) > (val2))
+#define CHECK_NOTNULL(pointer) CHECK((pointer) != NULL)
+
 /** For details please see this
  * REFERENCE: http://www.cppreference.com/wiki/io/c/printf_format
  * \verbatim
