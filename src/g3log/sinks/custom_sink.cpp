@@ -5,6 +5,7 @@
 #include "g3log/loglevels.hpp"
 #include "g3log/logmessage.hpp"
 
+#include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <iostream>
@@ -17,6 +18,10 @@ namespace g3 {
  * */
 
 struct CustomSink {
+  CustomSink() {
+    // turn off stdio sync
+    std::ios::sync_with_stdio(false);
+  }
   enum FG_Color { YELLOW = 33, RED = 31, GREEN = 32, WHITE = 97 };
   FG_Color GetColor(const LEVELS level) {
     if (level.value == WARNING.value) {
@@ -38,14 +43,15 @@ struct CustomSink {
   std::string ColoredFormatting(const LogMessage &msg) {
     std::string out;
     auto color = GetColor(msg._level);
-    out.append(msg.timestamp() + " " + "\033[" + std::to_string(color) + "m" +
-               msg.level() + "\033[m" + "[" + msg.file() + "->" +
-               msg.function() + ":" + msg.line() + "] " + msg.message());
+    // highligt whole line
+    out.append("\033[" + std::to_string(color) + "m" + msg.timestamp() + " " +
+               msg.level() + "[" + msg.file() + "->" + msg.function() + ":" +
+               msg.line() + "] " + msg.message() + "\033[m");
     return out;
   }
 
   void PrintMessage(LogMessageMover logEntry) {
-    std::cout << ColoredFormatting(logEntry.get()) << std::endl;
+    std::clog << ColoredFormatting(logEntry.get()) << std::endl;
   }
 };
 
@@ -54,10 +60,21 @@ struct CustomSink {
  *  call initializeLogging()
  * */
 void InitG3Logging(const char *prefix) {
+  // add custom log level
   only_change_at_initialization::addLogLevel(ERROR);
   static auto worker = LogWorker::createLogWorker();
-  // worker->addDefaultLogger(prefix, FLAGS_log_dir);
-  worker->addSink(std::make_unique<CustomSink>(), &CustomSink::PrintMessage);
+
+  if (FLAGS_logtostderr) {
+    // if (true) {
+    std::cout << "Only log to stderr" << std::endl;
+    worker->addSink(std::make_unique<CustomSink>(), &CustomSink::PrintMessage);
+  } else if (FLAGS_alsologtostderr) {
+    worker->addSink(std::make_unique<CustomSink>(), &CustomSink::PrintMessage);
+    worker->addDefaultLogger(prefix, FLAGS_log_dir);
+  } else {
+    // only log to file
+    worker->addDefaultLogger(prefix, FLAGS_log_dir);
+  }
   initializeLogging(worker.get());
 }
 } // namespace g3
