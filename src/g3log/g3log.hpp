@@ -202,6 +202,27 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
 #define CHECK_GT(val1, val2) CHECK((val1) > (val2))
 #define CHECK_NOTNULL(pointer) CHECK((pointer) != NULL)
 
+// support for DCHECK
+#if defined(NDEBUG) && !defined(DCHECK_ALWAYS_ON)
+#define DCHECK_IS_ON() 0
+#else
+#define DCHECK_IS_ON() 1
+#endif
+
+#if DCHECK_IS_ON()
+#define DLOG(level) GLOG_LOG(level)
+#define DVLOG(verboselevel) GLOG_VLOG(verboselevel)
+#define DLOG_IF(level, condition) GLOG_LOG_IF(level, condition)
+#define DCHECK(condition) CHECK(condition)
+#define DCHECK_EQ(val1, val2) CHECK_EQ(val1, val2)
+#define DCHECK_NE(val1, val2) CHECK_NE(val1, val2)
+#define DCHECK_LE(val1, val2) CHECK_LE(val1, val2)
+#define DCHECK_LT(val1, val2) CHECK_LT(val1, val2)
+#define DCHECK_GE(val1, val2) CHECK_GE(val1, val2)
+#define DCHECK_GT(val1, val2) CHECK_GT(val1, val2)
+#define DCHECK_NOTNULL(val) CHECK_NOTNULL(val)
+#endif
+
 /** For details please see this
  * REFERENCE: http://www.cppreference.com/wiki/io/c/printf_format
  * \verbatim
