@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "g3log/common_flags.hpp"
 #include "g3log/generated_definitions.hpp"
 #include "g3log/logcapture.hpp"
 #include "g3log/loglevels.hpp"
@@ -181,6 +182,9 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
   if (LOG_OCCURRENCES_MOD_N == 1)                                              \
     if (g3::logLevel(level))                                                   \
   INTERNAL_LOG_MESSAGE(level).stream()
+
+// VLOG support
+#define GLOG_VLOG(verboselevel) GLOG_LOG_IF(INFO, FLAGS_v >= (verboselevel))
 
 // 'Design By Contract' stream API. For Broken Contracts:
 //         unit testing: it will throw std::runtime_error when a contract breaks

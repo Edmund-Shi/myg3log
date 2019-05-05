@@ -2,5 +2,6 @@
 #include "gflags/gflags.h"
 
 DECLARE_string(log_dir);
+DECLARE_int32(v);
 DECLARE_bool(logtostderr);
 DECLARE_bool(alsologtostderr);
