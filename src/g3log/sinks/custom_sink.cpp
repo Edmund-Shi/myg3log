@@ -24,13 +24,13 @@ struct CustomSink {
   }
   enum FG_Color { YELLOW = 33, RED = 31, GREEN = 32, WHITE = 97 };
   FG_Color GetColor(const LEVELS level) {
-    if (level.value == WARNING.value) {
+    if (level.value == G3LOG_WARNING.value) {
       return YELLOW;
     }
-    if (level.value == DEBUG.value) {
+    if (level.value == G3LOG_DEBUG.value) {
       return GREEN;
     }
-    if (level.value == ERROR.value) {
+    if (level.value == G3LOG_ERROR.value) {
       return RED;
     }
     if (g3::internal::wasFatal(level)) {
@@ -61,7 +61,7 @@ struct CustomSink {
  * */
 void InitG3Logging(const char *prefix) {
   // add custom log level
-  only_change_at_initialization::addLogLevel(ERROR);
+  only_change_at_initialization::addLogLevel(G3LOG_ERROR);
   static auto worker = LogWorker::createLogWorker();
 
   if (FLAGS_logtostderr) {

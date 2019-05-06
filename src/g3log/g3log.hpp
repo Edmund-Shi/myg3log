@@ -184,7 +184,8 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
   INTERNAL_LOG_MESSAGE(level).stream()
 
 // VLOG support
-#define GLOG_VLOG(verboselevel) GLOG_LOG_IF(INFO, FLAGS_v >= (verboselevel))
+#define GLOG_VLOG(verboselevel)                                                \
+  GLOG_LOG_IF(G3LOG_INFO, FLAGS_v >= (verboselevel))
 
 // 'Design By Contract' stream API. For Broken Contracts:
 //         unit testing: it will throw std::runtime_error when a contract breaks
@@ -288,15 +289,14 @@ number of characters written so far
 For flags, width, precision etc please see the above references.
 EXAMPLES:
 {
-   GLOG_LOGF(INFO, "Characters: %c %c \n", 'a', 65);
-   GLOG_LOGF(INFO, "Decimals: %d %ld\n", 1977, 650000L);      // printing long
-   GLOG_LOGF(INFO, "Preceding with blanks: %10d \n", 1977);
-   GLOG_LOGF(INFO, "Preceding with zeros: %010d \n", 1977);
-   GLOG_LOGF(INFO, "Some different radixes: %d %x %o %#x %#o \n", 100, 100, 100,
-100, 100); GLOG_LOGF(INFO, "floats: %4.2f %+.0e %E \n", 3.1416, 3.1416, 3.1416);
-   GLOG_LOGF(INFO, "Width trick: %*d \n", 5, 10);
-   GLOG_LOGF(INFO, "%s \n", "A string");
-   return 0;
+   GLOG_LOGF(G3LOG_INFO, "Characters: %c %c \n", 'a', 65);
+   GLOG_LOGF(G3LOG_INFO, "Decimals: %d %ld\n", 1977, 650000L);      // printing
+long GLOG_LOGF(G3LOG_INFO, "Preceding with blanks: %10d \n", 1977);
+   GLOG_LOGF(G3LOG_INFO, "Preceding with zeros: %010d \n", 1977);
+   GLOG_LOGF(G3LOG_INFO, "Some different radixes: %d %x %o %#x %#o \n", 100,
+100, 100, 100, 100); GLOG_LOGF(G3LOG_INFO, "floats: %4.2f %+.0e %E
+\n", 3.1416, 3.1416, 3.1416); GLOG_LOGF(G3LOG_INFO, "Width trick: %*d \n", 5,
+10); GLOG_LOGF(G3LOG_INFO, "%s \n", "A string"); return 0;
 }
 And here is possible output
 :      Characters: a A

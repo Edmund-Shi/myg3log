@@ -54,7 +54,7 @@ LogCapture::LogCapture(const LEVELS &level, g3::SignalType fatal_signal,
 
 /**
  * @file, line, function are given in g3log.hpp from macros
- * @level INFO/DEBUG/WARNING/FATAL
+ * @level G3LOG_INFO/G3LOG_DEBUG/G3LOG_WARNING/G3LOG_FATAL
  * @expression for CHECK calls
  * @fatal_signal for failed CHECK:SIGABRT or fatal signal caught in the signal
  * handler

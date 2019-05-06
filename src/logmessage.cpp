@@ -101,7 +101,7 @@ std::string LogMessage::toString(LogDetailsFunc formattingFunc) const {
     return LogMessage::fatalExceptionToString(*this);
   }
 
-  if (FATAL.value == _level.value) {
+  if (G3LOG_FATAL.value == _level.value) {
     return LogMessage::fatalLogToString(*this);
   }
 

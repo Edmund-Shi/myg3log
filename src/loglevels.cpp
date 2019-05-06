@@ -13,14 +13,14 @@
 
 namespace g3 {
 namespace internal {
-bool wasFatal(const LEVELS &level) { return level.value >= FATAL.value; }
+bool wasFatal(const LEVELS &level) { return level.value >= G3LOG_FATAL.value; }
 
 #ifdef G3_DYNAMIC_LOGGING
 const std::map<int, LoggingLevel> g_log_level_defaults = {
     {G3LOG_DEBUG.value, {G3LOG_DEBUG}},
-    {INFO.value, {INFO}},
-    {WARNING.value, {WARNING}},
-    {FATAL.value, {FATAL}}};
+    {G3LOG_INFO.value, {G3LOG_INFO}},
+    {G3LOG_WARNING.value, {G3LOG_WARNING}},
+    {G3LOG_FATAL.value, {G3LOG_FATAL}}};
 
 std::map<int, g3::LoggingLevel> g_log_levels = g_log_level_defaults;
 #endif

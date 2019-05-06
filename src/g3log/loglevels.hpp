@@ -97,8 +97,9 @@ static const int kInternalFatalValue = 2000;
 } // namespace g3
 
 const LEVELS G3LOG_DEBUG{g3::kDebugValue, {"DEBUG"}},
-    INFO{g3::kInfoValue, {"INFO"}}, WARNING{g3::kWarningValue, {"WARNING"}},
-    FATAL{g3::kFatalValue, {"FATAL"}};
+    G3LOG_INFO{g3::kInfoValue, {"INFO"}},
+    G3LOG_WARNING{g3::kWarningValue, {"WARNING"}},
+    G3LOG_FATAL{g3::kFatalValue, {"FATAL"}};
 
 namespace g3 {
 // Logging level and atomic status collection struct
@@ -107,7 +108,7 @@ struct LoggingLevel {
   LEVELS level;
 
   // default operator needed for std::map compliance
-  LoggingLevel() : status(false), level(INFO){};
+  LoggingLevel() : status(false), level(G3LOG_INFO){};
   LoggingLevel(const LoggingLevel &lvl)
       : status(lvl.status), level(lvl.level) {}
   LoggingLevel(const LEVELS &lvl) : status(true), level(lvl){};
@@ -149,7 +150,7 @@ void addLogLevel(LEVELS level);
 
 /// reset all default logging levels to enabled
 /// remove any added logging levels so that the only ones left are
-///  {DEBUG,INFO,WARNING,FATAL}
+///  {G3LOG_DEBUG,G3LOG_INFO,G3LOG_WARNING,G3LOG_FATAL}
 void reset();
 } // namespace only_change_at_initialization
 
