@@ -190,7 +190,7 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
 //         unit testing: it will throw std::runtime_error when a contract breaks
 //         I.R.L : it will exit the application by using fatal signal SIGABRT
 #define CHECK(boolean_expression)                                              \
-  if (false == (boolean_expression))                                           \
+  if (!(boolean_expression))                                                   \
   INTERNAL_CONTRACT_MESSAGE(#boolean_expression).stream()
 
 // naive CHECK_OP implement
