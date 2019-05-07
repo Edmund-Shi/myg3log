@@ -13,6 +13,9 @@
 #include <string>
 
 namespace g3 {
+namespace {
+int g_stderrthreshold = 0;
+}
 
 /** Colored log to cout.
  * */
@@ -51,7 +54,8 @@ struct CustomSink {
   }
 
   void PrintMessage(LogMessageMover logEntry) {
-    std::clog << ColoredFormatting(logEntry.get()) << std::endl;
+    if (logEntry.get().level_value() >= g_stderrthreshold)
+      std::clog << ColoredFormatting(logEntry.get()) << std::endl;
   }
 };
 
@@ -63,6 +67,28 @@ void InitG3Logging(const char *prefix) {
   // add custom log level
   only_change_at_initialization::addLogLevel(G3LOG_ERROR);
   static auto worker = LogWorker::createLogWorker();
+
+  // determine stderr threshold
+  switch (FLAGS_stderrthreshold) {
+  case 4:
+    g_stderrthreshold = G3LOG_DEBUG.value;
+    break;
+  case 3:
+    g_stderrthreshold = G3LOG_INFO.value;
+    break;
+  case 2:
+    g_stderrthreshold = G3LOG_WARNING.value;
+    break;
+  case 1:
+    g_stderrthreshold = G3LOG_ERROR.value;
+    break;
+  case 0:
+    g_stderrthreshold = G3LOG_FATAL.value;
+    break;
+  default:
+    g_stderrthreshold = G3LOG_WARNING.value;
+    break;
+  }
 
   if (FLAGS_logtostderr) {
     // if (true) {

@@ -5,3 +5,4 @@ DECLARE_string(log_dir);
 DECLARE_int32(v);
 DECLARE_bool(logtostderr);
 DECLARE_bool(alsologtostderr);
+DECLARE_int32(stderrthreshold);

@@ -34,6 +34,7 @@ struct LogMessage {
   std::string line() const { return std::to_string(_line); }
   std::string function() const { return _function; }
   std::string level() const { return _level.text; }
+  int level_value() const { return _level.value; }
   // make level name much shorter
   std::string shortLevel() const { return _level.text.substr(0, 1); }
 
