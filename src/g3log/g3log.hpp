@@ -147,24 +147,30 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
 } // namespace internal
 } // namespace g3
 
+#define G3LOG_LEVEL(level) (G3LOG_##level)
+
 #define INTERNAL_LOG_MESSAGE(level)                                            \
   LogCapture(__FILE__, __LINE__,                                               \
-             static_cast<const char *>(__PRETTY_FUNCTION__), level)
+             static_cast<const char *>(__PRETTY_FUNCTION__),                   \
+             G3LOG_LEVEL(level))
 
 #define INTERNAL_CONTRACT_MESSAGE(boolean_expression)                          \
   LogCapture(__FILE__, __LINE__, __PRETTY_FUNCTION__, g3::internal::CONTRACT,  \
              boolean_expression)
 
 // GLOG_LOG(level) is the API for the stream log
+// #define GLOG_LOG(level) \
+ if (!g3::logLevel(level)) { \
+ } else                                                                       \
+ INTERNAL_LOG_MESSAGE(level).stream()
+// change GLOG_LOG to expression
 #define GLOG_LOG(level)                                                        \
-  if (!g3::logLevel(level)) {                                                  \
-  } else                                                                       \
-    INTERNAL_LOG_MESSAGE(level).stream()
+  !g3::logLevel(G3LOG_LEVEL(level)) || INTERNAL_LOG_MESSAGE(level).stream()
 
 // 'Conditional' stream log
 #define GLOG_LOG_IF(level, boolean_expression)                                 \
   if (true == (boolean_expression))                                            \
-    if (g3::logLevel(level))                                                   \
+    if (g3::logLevel(G3LOG_LEVEL(level)))                                      \
   INTERNAL_LOG_MESSAGE(level).stream()
 
 // Use marco expansion to create, for each use of GLOG_EVERY_N(), static
@@ -180,12 +186,18 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
   if (++LOG_OCCURRENCES_MOD_N > n)                                             \
     LOG_OCCURRENCES_MOD_N -= n;                                                \
   if (LOG_OCCURRENCES_MOD_N == 1)                                              \
-    if (g3::logLevel(level))                                                   \
+    if (g3::logLevel(G3LOG_LEVEL(level)))                                      \
+  INTERNAL_LOG_MESSAGE(level).stream()
+
+#define GLOG_LOG_IF_EVERY_N(level, condition, n)                               \
+  static int LOG_OCCURRENCES = 0, LOG_OCCURRENCES_MOD_N = 0;                   \
+  ++LOG_OCCURRENCES;                                                           \
+  if (condition &&                                                             \
+      ((LOG_OCCURRENCES_MOD_N = (LOG_OCCURRENCES_MOD_N + 1) % n) == (1 % n)))  \
   INTERNAL_LOG_MESSAGE(level).stream()
 
 // VLOG support
-#define GLOG_VLOG(verboselevel)                                                \
-  GLOG_LOG_IF(G3LOG_INFO, FLAGS_v >= (verboselevel))
+#define GLOG_VLOG(verboselevel) GLOG_LOG_IF(INFO, FLAGS_v >= (verboselevel))
 
 // 'Design By Contract' stream API. For Broken Contracts:
 //         unit testing: it will throw std::runtime_error when a contract breaks
@@ -308,14 +320,14 @@ And here is possible output
 :      Width trick:    10
 :      A string  \endverbatim */
 #define GLOG_LOGF(level, printf_like_message, ...)                             \
-  if (!g3::logLevel(level)) {                                                  \
+  if (!g3::logLevel(G3LOG_LEVEL(level))) {                                     \
   } else                                                                       \
     INTERNAL_LOG_MESSAGE(level).capturef(printf_like_message, ##__VA_ARGS__)
 
 // Conditional log printf syntax
 #define GLOG_LOGF_IF(level, boolean_expression, printf_like_message, ...)      \
   if (true == (boolean_expression))                                            \
-    if (g3::logLevel(level))                                                   \
+    if (g3::logLevel(G3LOG_LEVEL(level)))                                      \
   INTERNAL_LOG_MESSAGE(level).capturef(printf_like_message, ##__VA_ARGS__)
 
 // Design By Contract, printf-like API syntax with variadic input parameters.

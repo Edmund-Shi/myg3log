@@ -135,7 +135,7 @@ void shutDownLogging() {
 bool shutDownLoggingForActiveOnly(LogWorker *active) {
   if (isLoggingInitialized() && nullptr != active &&
       (active != g_logger_instance)) {
-    GLOG_LOG(G3LOG_WARNING)
+    GLOG_LOG(WARNING)
         << "\n\t\tAttempted to shut down logging, but the ID of the "
            "Logger is not the one that is active."
         << "\n\t\tHaving multiple instances of the g3::LogWorker is "
