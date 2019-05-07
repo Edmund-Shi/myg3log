@@ -197,7 +197,7 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
   INTERNAL_LOG_MESSAGE(level).stream()
 
 // VLOG support
-#define GLOG_VLOG(verboselevel) GLOG_LOG_IF(INFO, FLAGS_v >= (verboselevel))
+#define GLOG_VLOG(verboselevel) GLOG_LOG_IF(DEBUG, FLAGS_v >= (verboselevel))
 
 // 'Design By Contract' stream API. For Broken Contracts:
 //         unit testing: it will throw std::runtime_error when a contract breaks
