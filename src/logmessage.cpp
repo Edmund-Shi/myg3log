@@ -58,8 +58,8 @@ std::string LogMessage::fatalCheckToString(const LogMessage &msg) {
 // helper for setting the normal log details in an entry
 std::string LogMessage::DefaultLogDetailsToString(const LogMessage &msg) {
   std::string out;
-  out.append(msg.timestamp() + "\t" + msg.level() + " [" + msg.file() + "->" +
-             msg.function() + ":" + msg.line() + "]\t");
+  out.append(msg.shortLevel() + msg.timestamp() + " " + msg.file() + "->" +
+             msg.function() + ":" + msg.line() + "] ");
   return out;
 }
 
