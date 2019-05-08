@@ -10,3 +10,5 @@ DEFINE_bool(logtostderr, false,
             "log messages go to stderr instead of logfiles");
 DEFINE_bool(alsologtostderr, false,
             "log messages go to stderr in addition to logfiles");
+DEFINE_bool(colorlogtostderr, true,
+            "always log with color, to be compatible with glog");
