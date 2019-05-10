@@ -196,6 +196,15 @@ bool shutDownLoggingForActiveOnly(LogWorker *active);
       ((LOG_OCCURRENCES_MOD_N = (LOG_OCCURRENCES_MOD_N + 1) % n) == (1 % n)))  \
   INTERNAL_LOG_MESSAGE(level).stream()
 
+// LOG_FIRST_N support, no "GLOG_" prefix
+#define LOG_FIRST_N(level, n)                                                  \
+  static int LOG_OCCURRENCES = 0;                                              \
+  if (LOG_OCCURRENCES <= n)                                                    \
+    ++LOG_OCCURRENCES;                                                         \
+  if (LOG_OCCURRENCES <= n)                                                    \
+    if (g3::logLevel(G3LOG_LEVEL(level)))                                      \
+  INTERNAL_LOG_MESSAGE(level).stream()
+
 // VLOG support
 #define GLOG_VLOG(verboselevel) GLOG_LOG_IF(DEBUG, FLAGS_v >= (verboselevel))
 
