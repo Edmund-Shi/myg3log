@@ -70,37 +70,40 @@ void InitG3Logging(const char *prefix) {
 
   // determine stderr threshold
   switch (FLAGS_stderrthreshold) {
-  case 4:
+  case 0:
+    // INFO and DEBUG share same level
+    // DEBUG is used for coloring
     g_stderrthreshold = G3LOG_DEBUG.value;
     break;
-  case 3:
-    g_stderrthreshold = G3LOG_INFO.value;
-    break;
-  case 2:
+  case 1:
     g_stderrthreshold = G3LOG_WARNING.value;
     break;
-  case 1:
+  case 2:
     g_stderrthreshold = G3LOG_ERROR.value;
     break;
-  case 0:
+  case 3:
     g_stderrthreshold = G3LOG_FATAL.value;
     break;
   default:
-    g_stderrthreshold = G3LOG_WARNING.value;
+    g_stderrthreshold = G3LOG_ERROR.value;
     break;
   }
 
   if (FLAGS_logtostderr) {
-    // if (true) {
-    std::cout << "Only log to stderr" << std::endl;
+    std::clog << "Only log to stderr" << std::endl;
+    // log all to stderr
+    g_stderrthreshold = G3LOG_DEBUG.value;
     worker->addSink(std::make_unique<CustomSink>(), &CustomSink::PrintMessage);
   } else if (FLAGS_alsologtostderr) {
+    g_stderrthreshold = G3LOG_DEBUG.value;
     worker->addSink(std::make_unique<CustomSink>(), &CustomSink::PrintMessage);
     worker->addDefaultLogger(prefix, FLAGS_log_dir);
   } else {
-    // only log to file
+    // log to file in addition to logmessage above threshold
+    worker->addSink(std::make_unique<CustomSink>(), &CustomSink::PrintMessage);
     worker->addDefaultLogger(prefix, FLAGS_log_dir);
   }
   initializeLogging(worker.get());
 }
+void SetStderrLogging(LEVELS level) { g_stderrthreshold = level.value; }
 } // namespace g3
