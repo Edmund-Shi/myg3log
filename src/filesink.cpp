@@ -15,7 +15,7 @@ namespace g3 {
 using namespace internal;
 
 FileSink::FileSink(const std::string &log_prefix,
-                   const std::string &log_directory,
+                   const std::string &log_directory, const LEVELS &level,
                    const std::string &logger_id)
     : _log_details_func(&LogMessage::DefaultLogDetailsToString),
       _log_file_with_path(log_directory), _log_prefix_backup(log_prefix),
@@ -23,7 +23,7 @@ FileSink::FileSink(const std::string &log_prefix,
       _header("\t\tLOG format: [YYYY/MM/DD hh:mm:ss uuu* LEVEL "
               "FILE->FUNCTION:LINE] messagen\n\t\t(uuu*: microseconds "
               "fractions of the seconds value)\n\n"),
-      _firstEntry(true) {
+      _firstEntry(true), min_loglevel_(level) {
   _log_prefix_backup = prefixSanityFix(log_prefix);
   if (!isValidFilename(_log_prefix_backup)) {
     std::cerr << "g3log: forced abort due to illegal log prefix [" << log_prefix
@@ -31,7 +31,8 @@ FileSink::FileSink(const std::string &log_prefix,
     abort();
   }
 
-  std::string file_name = createLogFileName(_log_prefix_backup, logger_id);
+  std::string file_name =
+      createLogFileName(_log_prefix_backup, level, logger_id);
   _log_file_with_path = pathSanityFix(_log_file_with_path, file_name);
   _outptr = createLogFile(_log_file_with_path);
 
@@ -63,18 +64,25 @@ void FileSink::fileWrite(LogMessageMover message) {
     _firstEntry = false;
   }
 
+  // message which are lower than min level are not actual logged
+  if (message.get().level_value() < min_loglevel_.value) {
+    return;
+  }
+
   std::ofstream &out(filestream());
   out << message.get().toString(_log_details_func) << std::flush;
 }
 
 std::string FileSink::changeLogFile(const std::string &directory,
-                                    const std::string &logger_id) {
+                                    const std::string &logger_id,
+                                    const LEVELS &level) {
 
   auto now = std::chrono::system_clock::now();
   auto now_formatted = g3::localtime_formatted(
       now, {internal::date_formatted + " " + internal::time_formatted});
 
-  std::string file_name = createLogFileName(_log_prefix_backup, logger_id);
+  std::string file_name =
+      createLogFileName(_log_prefix_backup, level, logger_id);
   std::string prospect_log = directory + file_name;
   std::unique_ptr<std::ofstream> log_stream = createLogFile(prospect_log);
   if (nullptr == log_stream) {

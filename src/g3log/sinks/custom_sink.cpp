@@ -15,7 +15,7 @@
 namespace g3 {
 namespace {
 int g_stderrthreshold = 0;
-}
+} // namespace
 
 /** Colored log to cout.
  * */
@@ -64,8 +64,6 @@ struct CustomSink {
  *  call initializeLogging()
  * */
 void InitG3Logging(const char *prefix) {
-  // add custom log level
-  only_change_at_initialization::addLogLevel(G3LOG_ERROR);
   static auto worker = LogWorker::createLogWorker();
 
   // determine stderr threshold

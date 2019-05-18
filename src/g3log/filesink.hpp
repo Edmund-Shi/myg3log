@@ -10,18 +10,21 @@
 #include <memory>
 #include <string>
 
+#include "g3log/loglevels.hpp"
 #include "g3log/logmessage.hpp"
+
 namespace g3 {
 
 class FileSink {
 public:
   FileSink(const std::string &log_prefix, const std::string &log_directory,
-           const std::string &logger_id = "g3log");
+           const LEVELS &level, const std::string &logger_id = "g3log");
   virtual ~FileSink();
 
   void fileWrite(LogMessageMover message);
   std::string changeLogFile(const std::string &directory,
-                            const std::string &logger_id);
+                            const std::string &logger_id,
+                            const LEVELS &level = G3LOG_INFO);
   std::string fileName();
   void overrideLogDetails(LogMessage::LogDetailsFunc func);
   void overrideLogHeader(const std::string &change);
@@ -35,6 +38,7 @@ private:
   std::unique_ptr<std::ofstream> _outptr;
   std::string _header;
   bool _firstEntry;
+  LEVELS min_loglevel_;
 
   void addLogFileHeader();
   std::ofstream &filestream() { return *(_outptr.get()); }

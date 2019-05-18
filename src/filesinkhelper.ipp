@@ -8,16 +8,40 @@
 
 #pragma once
 
+#include "g3log/loglevels.hpp"
 #include <algorithm>
+#include <cstddef>
+#include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <memory>
 #include <sstream>
 #include <string>
+#include <sys/utsname.h>
 
 namespace g3 {
 namespace internal {
 static const std::string file_name_time_formatted = "%Y%m%d-%H%M%S";
+
+// get current host name
+std::string GetHostName() {
+  struct utsname buf;
+  if (0 != uname(&buf)) {
+    // ensure null termination on failure
+    *buf.nodename = '\0';
+  }
+  return buf.nodename;
+}
+
+// get user name. assume call on unix system
+std::string GetUserName() {
+  const char *user = getenv("USER");
+  if (user != NULL) {
+    return user;
+  } else {
+    return "invalid-user";
+  }
+}
 
 // check for filename validity -  filename should not be part of PATH
 bool isValidFilename(const std::string &prefix_filename) {
@@ -37,6 +61,9 @@ bool isValidFilename(const std::string &prefix_filename) {
 }
 
 std::string prefixSanityFix(std::string prefix) {
+  // remove path until the last '/'
+  std::size_t slash = prefix.find_last_of("/\\");
+  prefix = prefix.substr(slash + 1);
   prefix.erase(std::remove_if(prefix.begin(), prefix.end(), ::isspace),
                prefix.end());
   prefix.erase(std::remove(prefix.begin(), prefix.end(), '/'), prefix.end());
@@ -87,15 +114,13 @@ std::string header(const std::string &headerFormat) {
 }
 
 std::string createLogFileName(const std::string &verified_prefix,
+                              const LEVELS &level,
                               const std::string &logger_id) {
   std::stringstream oss_name;
-  oss_name << verified_prefix << ".";
-  if (logger_id != "") {
-    oss_name << logger_id << ".";
-  }
+  oss_name << verified_prefix << "." << GetHostName() << "." << GetUserName()
+           << ".log." << level.text << ".";
   auto now = std::chrono::system_clock::now();
   oss_name << g3::localtime_formatted(now, file_name_time_formatted);
-  oss_name << ".log";
   return oss_name.str();
 }
 

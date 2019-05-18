@@ -11,6 +11,7 @@
 #include "g3log/crashhandler.hpp"
 #include "g3log/future.hpp"
 #include "g3log/g3log.hpp"
+#include "g3log/loglevels.hpp"
 #include "g3log/logmessage.hpp"
 
 #include <iostream>
@@ -133,8 +134,14 @@ std::unique_ptr<FileSinkHandle>
 LogWorker::addDefaultLogger(const std::string &log_prefix,
                             const std::string &log_directory,
                             const std::string &default_id) {
+  addSink(
+      std::make_unique<g3::FileSink>(log_prefix, log_directory, G3LOG_ERROR),
+      &FileSink::fileWrite);
+  addSink(
+      std::make_unique<g3::FileSink>(log_prefix, log_directory, G3LOG_WARNING),
+      &FileSink::fileWrite);
   return addSink(
-      std::make_unique<g3::FileSink>(log_prefix, log_directory, default_id),
+      std::make_unique<g3::FileSink>(log_prefix, log_directory, G3LOG_INFO),
       &FileSink::fileWrite);
 }
 

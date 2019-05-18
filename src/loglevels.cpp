@@ -20,6 +20,7 @@ const std::map<int, LoggingLevel> g_log_level_defaults = {
     {G3LOG_DEBUG.value, {G3LOG_DEBUG}},
     {G3LOG_INFO.value, {G3LOG_INFO}},
     {G3LOG_WARNING.value, {G3LOG_WARNING}},
+    {G3LOG_ERROR.value, {G3LOG_ERROR}},
     {G3LOG_FATAL.value, {G3LOG_FATAL}}};
 
 std::map<int, g3::LoggingLevel> g_log_levels = g_log_level_defaults;
