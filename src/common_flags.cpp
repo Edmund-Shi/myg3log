@@ -13,4 +13,6 @@ DEFINE_bool(alsologtostderr, false,
             "log messages go to stderr in addition to logfiles");
 DEFINE_bool(colorlogtostderr, true,
             "always log with color, to be compatible with glog");
-DEFINE_string(log_link, "", "do nothing. to be compatible with glog");
+DEFINE_string(log_link, "",
+              "Put additional links to the lates "
+              "log files in this directory");

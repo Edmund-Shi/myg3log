@@ -35,6 +35,7 @@ private:
   std::string _log_file_with_path;
   std::string _log_prefix_backup; // needed in case of future log file changes
                                   // of directory
+  std::string link_file_with_path_;
   std::unique_ptr<std::ofstream> _outptr;
   std::string _header;
   bool _firstEntry;

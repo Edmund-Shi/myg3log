@@ -8,8 +8,10 @@
 
 #include "g3log/filesink.hpp"
 #include "filesinkhelper.ipp"
+#include "g3log/common_flags.hpp"
 #include <cassert>
 #include <chrono>
+#include <unistd.h>
 
 namespace g3 {
 using namespace internal;
@@ -35,6 +37,30 @@ FileSink::FileSink(const std::string &log_prefix,
       createLogFileName(_log_prefix_backup, level, logger_id);
   _log_file_with_path = pathSanityFix(_log_file_with_path, file_name);
   _outptr = createLogFile(_log_file_with_path);
+
+  // try to create a symlink called <program_name>.<level>,
+  // every time we create a new logfile, we destroy the old link
+  // and create a new one. So it always points to the latest one
+  std::string link_name = createLinkName(_log_prefix_backup, level);
+  link_file_with_path_ = pathSanityFix(log_directory, link_name);
+  if (!link_file_with_path_.empty()) {
+    unlink(link_file_with_path_.c_str());
+    if (symlink(_log_file_with_path.c_str(), link_file_with_path_.c_str()) !=
+        0) {
+      // ignore symlink failure
+    }
+  }
+
+  if (!FLAGS_log_link.empty()) {
+    // additional symlink in log_link dir
+    std::string log_link_file_with_path =
+        pathSanityFix(FLAGS_log_link, link_name);
+    unlink(log_link_file_with_path.c_str());
+    if (symlink(_log_file_with_path.c_str(), log_link_file_with_path.c_str()) !=
+        0) {
+      // ignore symlink failure
+    }
+  }
 
   if (!_outptr) {
     std::cerr

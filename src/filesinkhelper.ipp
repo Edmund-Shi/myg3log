@@ -124,6 +124,10 @@ std::string createLogFileName(const std::string &verified_prefix,
   return oss_name.str();
 }
 
+std::string createLinkName(const std::string &verified_prefix,
+                           const LEVELS &level) {
+  return verified_prefix + "." + level.text;
+}
 bool openLogFile(const std::string &complete_file_with_path,
                  std::ofstream &outstream) {
   std::ios_base::openmode mode =
